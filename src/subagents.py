@@ -1,7 +1,7 @@
 import json
 import asyncio
 from anthropic import Anthropic
-from prompts import SPRINT_ANALYZER_PROMPT, BLOCKER_FINDER_PROMPT, REPORT_GENERATOR_PROMPT, CITATION_AGENT_PROMPT
+from prompts import SPRINT_ANALYZER_PROMPT, BLOCKER_FINDER_PROMPT, REPORT_GENERATOR_PROMPT, CITATION_AGENT_PROMPT, STATUS_CHANGER_PROMPT
 from mcp_client import MCPClient
 
 class Subagent:
@@ -12,11 +12,12 @@ class Subagent:
         self.mcp_client = mcp_client
         
         self.prompt_map = {
-             "sprint_analyzer": SPRINT_ANALYZER_PROMPT,
-             "blocker_finder": BLOCKER_FINDER_PROMPT,
-             "report_generator": REPORT_GENERATOR_PROMPT,
-             "citation_agent": CITATION_AGENT_PROMPT
-        }
+    "sprint_analyzer": SPRINT_ANALYZER_PROMPT,
+    "blocker_finder": BLOCKER_FINDER_PROMPT,
+    "report_generator": REPORT_GENERATOR_PROMPT,
+    "citation_agent": CITATION_AGENT_PROMPT,
+    "status_changer": STATUS_CHANGER_PROMPT,  # ← ДОБАВЬ
+}
     
     async def execute(self):
         """Выполняет задачу субагента с доступом к MCP инструментам"""
@@ -37,8 +38,27 @@ class Subagent:
         
         messages = [{"role": "user", "content": prompt}]
         
+        # Лимит на количество tool calls
+        max_iterations = 15  # ← ДОБАВЛЕНО
+        iteration = 0        # ← ДОБАВЛЕНО
+        
         # Агентный цикл: Claude вызывает инструменты пока не завершит задачу
         while True:
+            iteration += 1  # ← ДОБАВЛЕНО
+            
+            # Проверка лимита
+            if iteration > max_iterations:  # ← ДОБАВЛЕНО
+                print(f"   ⚠️  Reached max iterations ({max_iterations}), stopping agent")
+                result_text = next(
+                    (block.text for block in response.content if hasattr(block, "text")),
+                    f"Agent stopped after {max_iterations} tool calls. Partial results may be available."
+                )
+                return {
+                    "agent_type": self.agent_type,
+                    "task": self.task,
+                    "result": result_text
+                }
+            
             response = self.client.messages.create(
                 model="claude-sonnet-4-20250514",
                 max_tokens=4000,
@@ -76,9 +96,7 @@ class Subagent:
                             "type": "tool_result",
                             "tool_use_id": block.id,
                             "content": str(result)
-                        }
-
-)
+                        })
                 
                 # Добавляем результаты инструментов
                 messages.append({"role": "user", "content": tool_results})

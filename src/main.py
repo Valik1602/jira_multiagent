@@ -36,7 +36,7 @@ async def main():
         orchestrator = Orchestrator(api_key=api_key, mcp_client=mcp_client)
         
         # Тестовый запрос
-        user_query = "Analyze the current sprint in project TEST and identify any blockers"
+        user_query = "Execute: Change status of all Valentyn Zelinskyi's In Progress issues to Done"
         
         print(f"🎯 User Query: {user_query}\n")
         print("=" * 60 + "\n")
