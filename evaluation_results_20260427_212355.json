@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-04-27T21:23:55.724922",
+  "total": 6,
+  "passed": 0,
+  "results": [
+    {
+      "name": "move_single_issue_to_done",
+      "prompt": "Change status of TEST-1 to Done",
+      "success": true,
+      "tool_calls": 0,
+      "time_seconds": 49.6,
+      "passed": false,
+      "expected_max_calls": 5,
+      "llm_judge": {
+        "accuracy": 0.5,
+        "completeness": 0.3,
+        "tool_efficiency": 0.2,
+        "source_quality": 0.3,
+        "overall_score": 0.3,
+        "pass": false,
+        "feedback": "The agent failed to complete the primary task of changing TEST-1 status to Done. Major issues include: (1) The task required straightforward use of jira_search_issues and jira_update_status tools, but the agent instead deployed multiple subagents adding unnecessary complexity; (2) An elaborate and completely unnecessary 'Citation Verification Report' was generated for what should be a simple status update operation - this is excessive bloat; (3) The core objective was not achieved; (4) While authentication failures can legitimately occur, the agent's response is disproportionately complex for a simple 2-tool task. The report structure suggests the agent was optimized for research tasks rather than simple action-oriented tasks. Tool efficiency is very low given the max 5 tool calls constraint was likely violated by the multi-agent approach."
+      }
+    },
+    {
+      "name": "move_multiple_issues_to_done",
+      "prompt": "Move all In Progress issues assigned to Valentyn to Done",
+      "success": true,
+      "tool_calls": 0,
+      "time_seconds": 71.41,
+      "passed": false,
+      "expected_max_calls": 25,
+      "llm_judge": {
+        "accuracy": 0.5,
+        "completeness": 0.2,
+        "tool_efficiency": 0.2,
+        "source_quality": 0.3,
+        "overall_score": 0.25,
+        "pass": false,
+        "feedback": "The agent failed to complete the core task of moving Valentyn's In Progress issues to Done. While it reports authentication failures (HTTP 401), the output is bloated with a lengthy meta-analysis and 'citation verification report' that adds no value when the fundamental operations weren't executed. Key issues: (1) The agent never successfully called jira_search_issues or jira_update_status, meaning the task is entirely incomplete. (2) The verbose self-analysis and citation verification sections are unnecessary and suggest the agent was padding output rather than solving the problem. (3) There's no evidence the agent retried authentication or attempted alternative approaches. (4) The mention of 'TEST-1' as a task suggests the agent may have misunderstood or fabricated sub-tasks not aligned with the original query. (5) Tool efficiency is very low since neither expected tool (jira_search_issues, jira_update_status) was successfully utilized. A proper response would either resolve the authentication issue and complete the task, or provide a concise error message with actionable next steps \u2014 not a multi-section report with a self-graded confidence score."
+      }
+    },
+    {
+      "name": "find_blockers",
+      "prompt": "Find all blocked or unassigned issues in TEST project",
+      "success": true,
+      "tool_calls": 0,
+      "time_seconds": 100.53,
+      "passed": false,
+      "expected_max_calls": 10,
+      "llm_judge": {
+        "accuracy": 0.4,
+        "completeness": 0.1,
+        "tool_efficiency": 0.1,
+        "source_quality": 0.2,
+        "overall_score": 0.15,
+        "pass": false,
+        "feedback": "The agent completely failed to accomplish the task. The user asked to 'find all blocked or unassigned issues in TEST project' \u2014 a straightforward search task requiring the jira_search_issues tool. Instead of attempting even a single tool call and reporting results, the agent produced a lengthy report about authentication failures, irrelevant operations (status changes for TEST-1, Valentyn's issues), and 'planned search strategies.' The task only required jira_search_issues with JQL like 'project = TEST AND (status = Blocked OR assignee is EMPTY)' \u2014 at most 1-2 tool calls. There is no evidence the agent actually called jira_search_issues at all. The report is bloated with unrelated operations (status changes were never requested), a self-referential citation verification section, and inflated 'executive summary' language. Even if authentication truly failed, the report should be concise and focused solely on the blocked/unassigned issue search. The agent appears to have confused this task with a much broader project management task, showing poor task scoping and zero actual results delivered."
+      }
+    },
+    {
+      "name": "add_to_sprint",
+      "success": false,
+      "error": "'sprint_manager'",
+      "passed": false
+    },
+    {
+      "name": "analyze_sprint",
+      "prompt": "Analyze current sprint health in TEST project",
+      "success": true,
+      "tool_calls": 0,
+      "time_seconds": 110.52,
+      "passed": false,
+      "expected_max_calls": 15,
+      "llm_judge": {
+        "accuracy": 0.6,
+        "completeness": 0.2,
+        "tool_efficiency": 0.1,
+        "source_quality": 0.1,
+        "overall_score": 0.2,
+        "pass": false,
+        "feedback": "The agent failed to complete the core task of analyzing sprint health in the TEST project. While it accurately reported authentication failures (HTTP 401 errors), the output is essentially a failure report dressed up as an analysis. Key weaknesses: (1) No actual sprint health data was retrieved \u2014 the task required calling 'jira_search_issues' but the agent apparently failed to authenticate and retrieve any data. (2) The report is bloated with generic frameworks, JQL templates, and 'planned' analyses that were never executed, providing no real value to the user. (3) The agent spawned 10 subagents for a simple sprint health query, which is grossly inefficient \u2014 a single authenticated call to jira_search_issues would suffice. (4) The report misleadingly includes details about unrelated tasks (status changes for TEST-1 and 'Valentyn's issues') that were never part of the original query, suggesting either contamination from other tasks or hallucination. (5) The citation verification section is cut off and adds no value. The agent should have simply reported the authentication failure clearly and concisely rather than generating a lengthy multi-section document with zero actual data. The only accurate element is the acknowledgment of the authentication barrier, but even that is over-explained."
+      }
+    },
+    {
+      "name": "create_issue",
+      "success": false,
+      "error": "'issue_creator'",
+      "passed": false
+    }
+  ]
+}

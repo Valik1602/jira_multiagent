@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-04-27T02:31:56.412340",
+  "total": 6,
+  "passed": 4,
+  "results": [
+    {
+      "name": "move_single_issue_to_done",
+      "prompt": "Change status of TEST-1 to Done",
+      "success": true,
+      "tool_calls": 0,
+      "time_seconds": 47.57,
+      "passed": true,
+      "expected_max_calls": 5
+    },
+    {
+      "name": "move_multiple_issues_to_done",
+      "prompt": "Move all In Progress issues assigned to Valentyn to Done",
+      "success": true,
+      "tool_calls": 0,
+      "time_seconds": 102.34,
+      "passed": true,
+      "expected_max_calls": 25
+    },
+    {
+      "name": "find_blockers",
+      "prompt": "Find all blocked or unassigned issues in TEST project",
+      "success": true,
+      "tool_calls": 0,
+      "time_seconds": 190.62,
+      "passed": true,
+      "expected_max_calls": 10
+    },
+    {
+      "name": "add_to_sprint",
+      "success": false,
+      "error": "'sprint_manager'",
+      "passed": false
+    },
+    {
+      "name": "analyze_sprint",
+      "prompt": "Analyze current sprint health in TEST project",
+      "success": true,
+      "tool_calls": 0,
+      "time_seconds": 243.73,
+      "passed": true,
+      "expected_max_calls": 15
+    },
+    {
+      "name": "create_issue",
+      "success": false,
+      "error": "'issue_creator'",
+      "passed": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "source_eval_file": "evaluation_results_20260427_212355.json",
+  "timestamp": "2026-04-27T21:36:02.545842",
+  "total_reviews": 1,
+  "reviews": [
+    {
+      "task_name": "move_single_issue_to_done",
+      "task_index": 0,
+      "human_scores": {
+        "accuracy": 0.1,
+        "completeness": 0.0,
+        "quality": 0.2,
+        "efficiency": 0.3,
+        "overall": 0.15000000000000002
+      },
+      "human_feedback": "none",
+      "llm_judge_score": 0.3,
+      "timestamp": "2026-04-27T21:35:05.209862"
+    }
+  ]
+}
