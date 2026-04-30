@@ -6,10 +6,11 @@ from subagents import Subagent
 from mcp_client import MCPClient
 
 class Orchestrator:
-    def __init__(self, api_key: str, mcp_client: MCPClient):
+    def __init__(self, api_key: str, mcp_client, use_http: bool = False):
         self.api_key = api_key
-        self.client = Anthropic(api_key=api_key)
         self.mcp_client = mcp_client
+        self.use_http = use_http
+        self.client = Anthropic(api_key=api_key)
         self.subagents_results = []
     
     def plan(self, user_query: str):
