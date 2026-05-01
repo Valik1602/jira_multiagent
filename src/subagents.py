@@ -3,6 +3,66 @@ import asyncio
 from anthropic import Anthropic
 from prompts import SPRINT_ANALYZER_PROMPT, BLOCKER_FINDER_PROMPT, REPORT_GENERATOR_PROMPT, CITATION_AGENT_PROMPT, STATUS_CHANGER_PROMPT
 
+
+class SubagentResponse:
+    """Structured response format for subagent execution with error propagation support"""
+    def __init__(
+        self,
+        status: str = "success",  # success | partial_failure | error
+        results: list = None,
+        failure_type: str = None,  # transient | validation | business | permission
+        attempted_action: dict = None,
+        partial_results: list = None,
+        alternatives: list = None,
+        coverage_notes: list = None,
+        should_retry: bool = False
+    ):
+        self.status = status
+        self.results = results or []
+        self.failure_type = failure_type
+        self.attempted_action = attempted_action or {}
+        self.partial_results = partial_results or []
+        self.alternatives = alternatives or []
+        self.coverage_notes = coverage_notes or []
+        self.should_retry = should_retry
+
+    def to_dict(self):
+        return {
+            "status": self.status,
+            "results": self.results,
+            "failure_type": self.failure_type,
+            "attempted_action": self.attempted_action,
+            "partial_results": self.partial_results,
+            "alternatives": self.alternatives,
+            "coverage_notes": self.coverage_notes,
+            "should_retry": self.should_retry
+        }
+
+
+AGENT_TOOL_MAPPING = {
+    "status_changer": [
+        "jira_search_issues",
+        "jira_update_status"
+    ],
+    "issue_creator": [
+        "jira_search_issues",
+        "jira_create_issue"
+    ],
+    "sprint_analyzer": [
+        "jira_search_issues",
+        "jira_analyze_issues_with_ai"
+    ],
+    "blocker_finder": [
+        "jira_search_issues"
+    ],
+    "report_generator": [
+        "jira_search_issues"
+    ],
+    "citation_agent": [
+        "jira_search_issues"
+    ]
+}
+
 class Subagent:
     def __init__(self, agent_type: str, task: str, api_key: str, mcp_client):
         self.agent_type = agent_type
@@ -43,7 +103,11 @@ class Subagent:
                     "description": tool.get("description", ""),
                     "input_schema": tool.get("input_schema", {"type": "object", "properties": {}})
                 })
-        
+
+        allowed_tool_names = AGENT_TOOL_MAPPING.get(self.agent_type)
+        if allowed_tool_names is not None:
+            tools = [t for t in tools if t["name"] in allowed_tool_names]
+
         messages = [{"role": "user", "content": prompt}]
         
         # Лимит на количество tool calls
